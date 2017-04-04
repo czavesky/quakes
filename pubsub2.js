@@ -1,55 +1,53 @@
 if (Meteor.isClient) {
-  Books = new Mongo.Collection('books');
+  Quakes = new Mongo.Collection('quakes');
 
   Session.setDefault('searching', false);
 
   Tracker.autorun(function() {
-    if (Session.get('query')) {
-      var searchHandle = Meteor.subscribe('booksSearch', Session.get('query'));
-      Session.set('searching', ! searchHandle.ready());
-    }
-  });
-
-  Template.body.events({
-    'submit form': function(event, template) {
-      event.preventDefault();
-      var query = template.$('input[type=text]').val();
-      if (query)
-        Session.set('query', query);
-    }
+    var searchHandle = Meteor.subscribe('quakesSearch');
+    Session.set('searching', !searchHandle.ready());
   });
 
   Template.body.helpers({
-    books: function() {
-      return Books.find();
+    quakes: function() {
+      return Quakes.find();
     },
     searching: function() {
       return Session.get('searching');
     }
   });
+  
+  Template.quake.helpers({
+    time: function() {
+      return (new Date(this.time)).toLocaleTimeString();
+    }
+  })
 }
 
 if (Meteor.isServer) {
-  Meteor.publish('booksSearch', function(query) {
+  Meteor.publish('quakesSearch', function() {
     var self = this;
     try {
-      var response = HTTP.get('https://www.googleapis.com/books/v1/volumes', {
-        params: {
-          q: query
-        }
-      });
+      
+      // Feed is from https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
+      var response = HTTP.get('https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson');
       
       console.log(response);
 
-      _.each(response.data.items, function(item) {
-        var doc = {
-          thumb: item.volumeInfo && item.volumeInfo.imageLinks && item.volumeInfo.imageLinks.smallThumbnail,
-          title: item.volumeInfo && item.volumeInfo.title,
-          link: item.volumeInfo && item.volumeInfo.infoLink,
-          snippet: item.searchInfo && item.searchInfo.textSnippet
-        };
-
-        self.added('books', Random.id(), doc);
+      _.each(response.data.features, function(feature) {
+        if (feature.properties && feature.geometry && feature.geometry.coordinates) {
+          var doc = {
+            place: feature.properties.place,
+            time: feature.properties.time,
+            magnitude: feature.properties.mag,
+            longitude: feature.geometry.coordinates[0],
+            latitude: feature.geometry.coordinates[1],
+            depth: feature.geometry.coordinates[1],
+            usgs_id: feature.id
+          };
+  
+          self.added('quakes', Random.id(), doc);
+        }
       });
 
       self.ready();
