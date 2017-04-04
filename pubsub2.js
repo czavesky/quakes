@@ -18,13 +18,29 @@ if (Meteor.isClient) {
   });
   
   Template.quake.helpers({
+    
+    // Format the time
     time: function() {
       return (new Date(this.time)).toLocaleTimeString();
+    },
+    
+    // Convert the latitude to a % for CSS top (really should be center but not for now)
+    top: function() {
+      return ((this.latitude * -1) + 90) / 180 * 100;
+    },
+    // Convert the longitude to a % for CSS left (really should be center but not for now)
+    left: function() {
+      return (this.longitude + 180) / 360 * 100;
+    },
+    // Convert the magnitude to an opacity from 0 to 1 for CSS
+    opacity: function() {
+      return Math.min(this.magnitude / 5, 1)
     }
   })
 }
 
 if (Meteor.isServer) {
+  
   Meteor.publish('quakesSearch', function() {
     var self = this;
     try {
@@ -56,4 +72,5 @@ if (Meteor.isServer) {
       console.log(error);
     }
   });
+  
 }

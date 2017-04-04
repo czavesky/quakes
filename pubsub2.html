@@ -16,7 +16,8 @@
 </body>
 
 <template name="quake">
-  <div>
-    Magnitude {{magnitude}} at {{place}} ({{latitude}}, {{longitude}}, {{depth}}) at {{time}}
+  <div class="quake"
+       style="top: {{top}}%; left: {{left}}%; opacity: {{opacity}};" 
+       title="Magnitude {{magnitude}} at {{place}} ({{latitude}}, {{longitude}}, {{depth}}) at {{time}}">
   </div>
 </template>
