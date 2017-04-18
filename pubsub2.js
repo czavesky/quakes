@@ -1,5 +1,5 @@
 if (Meteor.isClient) {
-  Quakes = new Mongo.Collection('quakes');
+  const Quakes = new Mongo.Collection('quakes');
 
   Session.setDefault('searching', false);
 
@@ -7,6 +7,16 @@ if (Meteor.isClient) {
     var searchHandle = Meteor.subscribe('quakesSearch');
     Session.set('searching', !searchHandle.ready());
   });
+  
+  var user_location = function() {
+    var location = geoip.get('location');
+    if (location) {
+      return location;
+    }
+    else {
+      return {latitude: 0, longitude: 0};
+    }
+  }
 
   Template.body.helpers({
     quakes: function() {
@@ -14,8 +24,19 @@ if (Meteor.isClient) {
     },
     searching: function() {
       return Session.get('searching');
+    },
+    location: function() {
+      console.log('location', user_location());
+      return user_location().latitude + ', ' + user_location().longitude;
     }
   });
+
+  var latitude_percent = function(latitude) {
+    return ((latitude * -1) + 90) / 180 * 100;  
+  };
+  var longitude_percent = function(longitude) {
+    return (longitude + 180) / 360 * 100;
+  };
   
   Template.quake.helpers({
     
@@ -23,19 +44,37 @@ if (Meteor.isClient) {
     time: function() {
       return (new Date(this.time)).toLocaleTimeString();
     },
-    
-    // Convert the latitude to a % for CSS top (really should be center but not for now)
+    // Top of the line, as a % 0-100
     top: function() {
-      return ((this.latitude * -1) + 90) / 180 * 100;
+      var earthquake_y = latitude_percent(this.latitude);
+      var user_y = latitude_percent(user_location().latitude);
+      return Math.min(earthquake_y, user_y);
     },
-    // Convert the longitude to a % for CSS left (really should be center but not for now)
+    // Left of the line, as a % 0-100
     left: function() {
-      return (this.longitude + 180) / 360 * 100;
+      var earthquake_x = longitude_percent(this.longitude);
+      var user_x = longitude_percent(user_location().longitude);
+      return Math.min(earthquake_x, user_x);
+    },
+    // Height of the line, as a % 0-100
+    height: function() {
+      var earthquake_y = latitude_percent(this.latitude);
+      var user_y = latitude_percent(user_location().latitude);
+      return Math.abs(user_y - earthquake_y);
+    },
+    // Width of the line, as a % 0-100
+    width: function() {
+      var earthquake_x = longitude_percent(this.longitude);
+      var user_x = longitude_percent(user_location().longitude);
+      return Math.abs(user_x - earthquake_x);
     },
     // Convert the magnitude to an opacity from 0 to 1 for CSS
     opacity: function() {
-      return Math.min(this.magnitude / 5, 1)
-    }
+      return Math.min(this.magnitude / 5, 1);
+    },
+    tooltip: function() {
+      console.log('Safari');
+    },
   })
 }
 

@@ -1,6 +1,58 @@
+/* CSS declarations go here */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    background-color: #000000;
+    display: inline-block;
+    position: relative;
+    font-size: 20px;
+    font-family: 'HELVETICA'; 
+    color: white;
+}
+
+.quakeWrap {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+
 .quake {
     position: absolute;
-    background-color: #ff0000;
-    width: 40px;
-    height: 40px;
+    background-image: url('diagonal-line.png');
+    background-size: 100% 100%;
+    /*background: transparent;*/
+    /*-webkit-filter: blur(10px);*/
+    /*-moz-filter: blur(10px);*/
+    /*-o-filter: blur(10px);*/
+    /*-ms-filter: blur(10px);*/
+    /*filter: blur(10px);*/
+    /*background: -webkit-linear-gradient(left, white , transparent);*/
+    /*background: -o-linear-gradient(right, transparent, white);*/
+    /*background: -moz-linear-gradient(right, transparent, white);*/
+    /*background: linear-gradient(to right, transparent , white);*/
+}
+
+.tooltip {
+    display: block;
+    opacity:0;
+    background:black;
+    color:white;
+    width:500px;
+    position: relative;
+    left: calc(50% - 250px);
+    margin-top: -100px;
+    padding:20px;
+    box-sizing: border-box;
+}
+.quake:hover + .tooltip {
+    opacity:1;
+    
+}
+
+.tooltip .data {
+    font-size: 24px;
 }
