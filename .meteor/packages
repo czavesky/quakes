@@ -23,3 +23,4 @@ standard-minifier-js
 shell-server
 peter:geoip
 reactive-dict
+flowkey:user-location

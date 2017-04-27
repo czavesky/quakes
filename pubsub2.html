@@ -12,6 +12,8 @@
       {{/each}}
     {{/if}}
   {{/if}}
+
+  {{> visitors}}
 </body>
 
 <template name="quake">
@@ -22,5 +24,13 @@
     <div class="tooltip" style="box-shadow: 0 0 30px rgba(255,255,255,{{opacity}}); background-color: rgba(0,0,0,{{opacity}})">
       <div class="data" style="opacity: {{opacity}}"> Magnitude {{magnitude}} at {{place}} ({{latitude}}, {{longitude}}, {{depth}}) at {{time}}</div>
     </div>
+  </div>
+</template>
+
+<template name="visitors">
+  <hr style="color: #fff; margin-top: 800px">
+  <div class="visitorsOn">
+    <!-- <p>Location {{top}}</p>
+    <p>Display Visitors online</p> -->
   </div>
 </template>
